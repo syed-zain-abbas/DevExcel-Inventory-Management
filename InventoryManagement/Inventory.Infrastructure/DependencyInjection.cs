@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Inventory.Application.Interfaces;
+using Inventory.Domain.Entities;
 using Inventory.Infrastructure.Data;
 using Inventory.Infrastructure.Repositories;
 using Inventory.Infrastructure.Transactions;
@@ -17,7 +18,32 @@ namespace Inventory.Infrastructure
         string connectionString)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            {
+                options.UseSqlServer(connectionString);
+
+                options.UseSeeding((context, _) =>
+                {
+                    if (!context.Set<Product>().Any())
+                    {
+                        context.Set<Product>()
+                            .AddRange(DatabaseSeeder.GetSeedProducts());
+
+                        context.SaveChanges();
+                    }
+                });
+
+                options.UseAsyncSeeding(async (context, _, cancellationToken) =>
+                {
+                    if (!await context.Set<Product>()
+                            .AnyAsync(cancellationToken))
+                    {
+                        context.Set<Product>()
+                            .AddRange(DatabaseSeeder.GetSeedProducts());
+
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+                });
+            });
 
             services.AddScoped<IProductRepository,
                 ProductRepository>();
