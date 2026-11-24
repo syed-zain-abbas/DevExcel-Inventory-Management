@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Inventory.Application.Common;
 using Inventory.Application.DTOs;
@@ -132,16 +133,13 @@ namespace Inventory.Application.Services
 
         private static string? ValidateProduct(ProductInputDto input)
         {
-            if (string.IsNullOrWhiteSpace(input.Sku))
-                return "SKU is required.";
+            var results = new List<ValidationResult>();
 
-            if (string.IsNullOrWhiteSpace(input.Name))
-                return "Product name is required.";
+            var isValid = Validator.TryValidateObject(input, new ValidationContext(input), results, validateAllProperties: true);
 
-            if (input.ReorderLevel < 0)
-                return "Reorder level cannot be negative.";
-
-            return null;
+            return isValid
+                ? null
+                : results.First().ErrorMessage;
         }
 
     }
