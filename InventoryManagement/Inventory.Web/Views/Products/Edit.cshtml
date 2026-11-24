@@ -1,0 +1,53 @@
+﻿@model Inventory.Application.DTOs.ProductInputDto
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="mb-4">
+    <h2>Edit Product</h2>
+
+    <p class="text-muted">
+        Update existing product information.
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <form asp-controller="Products"
+                      asp-action="Edit"
+                      asp-route-id="@ViewData["ProductId"]"
+                      method="post">
+
+                    <partial name="_ProductForm"
+                             model="Model" />
+
+                    <div class="d-flex gap-2 mt-4">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Update Product
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
