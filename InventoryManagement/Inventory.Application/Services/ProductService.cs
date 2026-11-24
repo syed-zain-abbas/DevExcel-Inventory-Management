@@ -146,6 +146,27 @@ namespace Inventory.Application.Services
             return ServiceResult.Success("Product deactivated successfully.");
         }
 
+
+        public async Task<ProductStockDto?> GetStockAsync(int productId)
+        {
+            var product = await _productRepository.GetByIdAsync(productId);
+
+            if (product is null)
+                return null;
+
+            var currentStock = await _stockRepository.GetCurrentStockAsync(productId);
+
+            return new ProductStockDto
+            {
+                ProductId = product.Id,
+                Sku = product.Sku,
+                Name = product.Name,
+                CurrentStock = currentStock,
+                ReorderLevel = product.ReorderLevel,
+                IsActive = product.IsActive
+            };
+        }
+
         private static string? ValidateProduct(ProductInputDto input)
         {
             var results = new List<ValidationResult>();
