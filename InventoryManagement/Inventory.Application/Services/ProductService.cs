@@ -56,60 +56,75 @@ namespace Inventory.Application.Services
 
         public async Task<ServiceResult> CreateAsync(ProductInputDto input)
         {
-            var validationError = ValidateProduct(input);
+            try {
 
-            if (validationError is not null)
-                return ServiceResult.Failure(validationError);
+                var validationError = ValidateProduct(input);
 
-            var sku = input.Sku.Trim().ToUpperInvariant();
+                if (validationError is not null)
+                    return ServiceResult.Failure(validationError);
 
-            if (await _productRepository.SkuExistsAsync(sku))
-            {
-                return ServiceResult.Failure("This SKU already exists.");
+                var sku = input.Sku.Trim().ToUpperInvariant();
+
+                if (await _productRepository.SkuExistsAsync(sku))
+                {
+                    return ServiceResult.Failure("This SKU already exists.");
+                }
+
+                var product = new Product
+                {
+                    Sku = sku,
+                    Name = input.Name.Trim(),
+                    Description = input.Description?.Trim(),
+                    ReorderLevel = input.ReorderLevel,
+                    IsActive = true,
+                    CreatedUtc = DateTime.UtcNow
+                };
+
+                await _productRepository.AddAsync(product);
+
+                return ServiceResult.Success("Product created successfully.");
             }
-
-            var product = new Product
+            catch(DuplicateSkuException ex)
             {
-                Sku = sku,
-                Name = input.Name.Trim(),
-                Description = input.Description?.Trim(),
-                ReorderLevel = input.ReorderLevel,
-                IsActive = true,
-                CreatedUtc = DateTime.UtcNow
-            };
-
-            await _productRepository.AddAsync(product);
-
-            return ServiceResult.Success("Product created successfully.");
+                return ServiceResult.Failure(ex.Message);
+            }
+            
         }
 
         public async Task<ServiceResult> UpdateAsync(int id, ProductInputDto input)
         {
-            var validationError = ValidateProduct(input);
+            try {
+                var validationError = ValidateProduct(input);
 
-            if (validationError is not null)
-                return ServiceResult.Failure(validationError);
+                if (validationError is not null)
+                    return ServiceResult.Failure(validationError);
 
-            var product = await _productRepository.GetByIdAsync(id);
+                var product = await _productRepository.GetByIdAsync(id);
 
-            if (product is null)
-                return ServiceResult.Failure("Product not found.");
+                if (product is null)
+                    return ServiceResult.Failure("Product not found.");
 
-            var sku = input.Sku.Trim().ToUpperInvariant();
+                var sku = input.Sku.Trim().ToUpperInvariant();
 
-            if (await _productRepository.SkuExistsAsync(sku, id))
-            {
-                return ServiceResult.Failure("This SKU already exists.");
-            }
+                if (await _productRepository.SkuExistsAsync(sku, id))
+                {
+                    return ServiceResult.Failure("This SKU already exists.");
+                }
 
-            product.Sku = sku;
-            product.Name = input.Name.Trim();
-            product.Description = input.Description?.Trim();
-            product.ReorderLevel = input.ReorderLevel;
+                product.Sku = sku;
+                product.Name = input.Name.Trim();
+                product.Description = input.Description?.Trim();
+                product.ReorderLevel = input.ReorderLevel;
 
-            await _productRepository.UpdateAsync(product);
+                await _productRepository.UpdateAsync(product);
 
-            return ServiceResult.Success("Product updated successfully.");
+                return ServiceResult.Success("Product updated successfully.");
+
+            } catch (DuplicateSkuException ex) { 
+                return ServiceResult.Failure(ex.Message); 
+            } 
+
+            
         }
 
         public async Task<ServiceResult> DeactivateAsync(int id)
