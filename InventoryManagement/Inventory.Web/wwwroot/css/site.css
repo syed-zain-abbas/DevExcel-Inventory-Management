@@ -1,0 +1,91 @@
+html {
+    font-size: 14px;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f7fa;
+    color: #212529;
+}
+
+main {
+    flex: 1;
+}
+
+.navbar-brand {
+    font-size: 1.2rem;
+    letter-spacing: 0.3px;
+}
+
+.navbar {
+    min-height: 64px;
+}
+
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px;
+}
+
+.table th {
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table th,
+.table td {
+    padding: 14px 12px;
+}
+
+.btn {
+    border-radius: 6px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 6px;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.badge {
+    padding: 7px 10px;
+    font-weight: 500;
+}
+
+.field-validation-error {
+    font-size: 0.85rem;
+}
+
+.input-validation-error {
+    border-color: #dc3545;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+footer {
+    font-size: 0.85rem;
+}
